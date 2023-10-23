@@ -1,0 +1,50 @@
+.board {
+    display: flex;
+    gap: 0.1rem;
+    height: 35vh;
+}
+
+.key-white {
+    background-color: white;
+    border: 2px solid wheat;
+    padding: 0.75rem;
+    border-radius: 0 0 5px 5px;
+    display: flex;
+    align-items: end;
+    justify-content: center;
+    width: 3.5rem;
+    transition: background-color 1500ms;
+}
+
+.key-white:active {
+    background-color: wheat;
+    transition: background-color 100ms;
+}
+.key-black:active > div {
+    transition: background-color 100ms;
+    background-color: rgb(119, 119, 119);
+}
+
+.key-black {
+    position: relative;
+    padding: 0;
+    width: 0px;
+    border: none;
+    display: flex;
+}
+.key-black > div {
+    background-color: black;
+    color: white;
+    padding: 0.1rem;
+    height: 50%;
+    border: 2px solid black;
+    border-radius: 0 0 5px 5px;
+    position: absolute;
+    left: -1.2rem;
+    min-width: 2rem;
+    max-width: 2rem;
+    transition: background-color 1500ms;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
