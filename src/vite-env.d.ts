@@ -4,5 +4,6 @@ export type RecordedKey = {
     octave: number | undefined
     key: number| undefined
     timestamp: number
-    hold?: number
+    hold?: Array
+    initialstamp?: number
   }

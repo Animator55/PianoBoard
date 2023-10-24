@@ -10,14 +10,38 @@ export default function App() {
   const [recording, startRecording] = React.useState<boolean>(false)
   const [Record, setRecord] = React.useState<RecordedKey[]>([])
   const [CachedRecords, setCachedRecords] = React.useState<Array<RecordedKey[]>>([])
+  const BoardRef = React.useRef<HTMLDivElement | null>(null)
 
-  const recordKey = (octave:number | undefined, index:number| undefined, timeHold:number)=>{
+  const recordKey = (octave:number | undefined, index:number| undefined, timestamp:number)=>{
     if(!recording) return 
-    let Recorded: RecordedKey = {octave: octave, key: index, timestamp: timeHold}
-    if(Record.length === 0) setRecord([...Record, Recorded])
+    if(Record.length === 0) {
+      let Recorded: RecordedKey = {octave: octave, key: index, timestamp: 0, initialstamp: timestamp}
+      setRecord([...Record, Recorded])
+    }
     else {
-      let SilenceGap: RecordedKey = {octave: -1, key: -1, timestamp: Record[Record.length-1].timestamp, hold: timeHold - Record[Record.length-1].timestamp}
+      let Recorded: RecordedKey = {octave: octave, key: index, timestamp: timestamp - Record[0].initialstamp!}
+      let SilenceGap: RecordedKey = {octave: -1, key: -1, timestamp: Record[Record.length-1].timestamp, hold: timestamp - Record[0].initialstamp! - Record[Record.length-1].timestamp}
       setRecord([...Record, SilenceGap, Recorded])
+    }
+  }
+
+  const playRecord = (index: number)=>{
+    console.log(index)
+    const currentRecord = CachedRecords[index]
+    for(let i = 0;i<currentRecord.length;i++) {
+      let key: RecordedKey = currentRecord[i]
+      setTimeout(()=>{
+        if(!BoardRef.current || key.key === undefined) return
+        if(key.key !== -1) {
+          let keyIndex = key.key + 12 * (key.octave!-1)
+          const KeyElement = BoardRef.current.children[keyIndex] as HTMLButtonElement
+          KeyElement.classList.add("active")
+          setTimeout(()=>{
+            KeyElement.click()
+            KeyElement.classList.remove("active")
+          },100)
+        }
+      }, key.timestamp)
     }
   }
 
@@ -25,18 +49,18 @@ export default function App() {
     let array : JSX.Element[] = []
     for(let i=1; i<=octaves;i++){
       for(let j=0;j<12;j++){
-        array.push(<PianoKey record={(timeHold:number)=>{recordKey(i, j, timeHold)}} key={Math.random()} octave={i} index={j}/>)
+        array.push(<PianoKey record={(timestamp:number)=>{recordKey(i, j, timestamp)}} key={Math.random()} octave={i} index={j}/>)
       }
     }
-    return <section className='board'>{array}</section>
+    return <section className='board' ref={BoardRef}>{array}</section>
   }
 
   const TopBar = ()=>{
     return <nav>
-      <RenderCached CachedRecords={CachedRecords}/>
+      <RenderCached CachedRecords={CachedRecords} playRecord={playRecord}/>
       <button onClick={(e:React.MouseEvent)=>{
           if(recording && Record.length !== 0) {
-            let SilenceGap: RecordedKey = {octave: -1, key: -1, timestamp: Record[Record.length-1].timestamp, hold: e.timeStamp - Record[Record.length-1].timestamp}
+            let SilenceGap: RecordedKey = {octave: -1, key: -1, timestamp: Record[Record.length-1].timestamp, hold: e.timeStamp - Record[0].initialstamp! - Record[Record.length-1].timestamp}
             setRecord([...Record, SilenceGap])
           }
           startRecording(!recording)
@@ -49,6 +73,7 @@ export default function App() {
       </select>
     </nav>
   }
+
 
   React.useEffect(()=>{
     if(!recording && Record.length !== 0) {

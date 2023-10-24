@@ -16,11 +16,11 @@
     transition: background-color 1500ms;
 }
 
-.key-white:active {
+.key-white.active, .key-white:active {
     background-color: wheat;
     transition: background-color 100ms;
 }
-.key-black:active > div {
+.key-black.active > div, .key-black:active > div {
     transition: background-color 100ms;
     background-color: rgb(119, 119, 119);
 }
