@@ -4,7 +4,6 @@ button:focus {
 
 .board {
     display: flex;
-    gap: 0.1rem;
     height: 35vh;
 }
 
@@ -20,11 +19,11 @@ button:focus {
     transition: background-color 1500ms;
 }
 
-.key-white.active, .key-white:active:not(.disabled) {
+.key-white.active, .key-white:active:not(.disabled-key) {
     background-color: wheat;
     transition: background-color 100ms;
 }
-.key-black.active > div, .key-black:active:not(.disabled) > div {
+.key-black.active > div, .key-black:active:not(.disabled-key) > div {
     transition: background-color 100ms;
     background-color: rgb(119, 119, 119);
 }
@@ -51,4 +50,23 @@ button:focus {
     display: flex;
     align-items: center;
     justify-content: center;
+}
+
+.editing:not(.key-black), .key-black.editing > div {
+    background-color: #51ffd9;
+    color: black;
+    border: 2px dotted black;
+    transition: background-color 150ms;
+}
+
+[data-editing="editing"].board * {
+    transition: background-color 150ms;
+}
+
+.disabled {
+    opacity: 0.7;
+}
+
+.playing {
+    background-color: rgba(20, 87, 0, 0.205);
 }

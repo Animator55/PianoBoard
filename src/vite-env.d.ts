@@ -7,3 +7,16 @@ export type RecordedKey = {
     hold?: Array
     initialstamp?: number
   }
+
+
+export type CachedRecords = {
+  [key: string]: RecordedKey[]
+}
+
+export type configuration = {
+  keyBinds: {
+    [key: string]: string
+  }
+  viewBinds: boolean
+  viewNotes: boolean
+}
