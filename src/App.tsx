@@ -3,6 +3,9 @@ import './assets/App.css'
 import PianoKey from './components/PianoKey'
 import { CachedRecords, RecordedKey, configuration } from './vite-env'
 import RenderCached from './components/RenderCached'
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
+import { faCheck } from '@fortawesome/free-solid-svg-icons/faCheck'
+import { faKeyboard } from '@fortawesome/free-solid-svg-icons/faKeyboard'
 
 let Record : RecordedKey[] = []
 const setRecord = (val: RecordedKey[]) =>{
@@ -67,6 +70,19 @@ export default function App() {
     }
   }
 
+  const StopRecord = (timeStamp:number, index: string, verifiyer: number)=>{
+    setTimeout(()=>{
+      if(!PlayingRecords.includes(index+"-"+verifiyer)||!BoardRef.current) return
+      PlayingRecords.splice(detectRecordsIndex(index), 1)
+      let recordButton: HTMLElement | null = document.getElementById(index)
+      if(recordButton !== null) {
+        let record = recordButton.firstChild as HTMLDivElement
+        record.style.transition = "none"
+        recordButton.classList.remove("playing")
+      }
+    }, timeStamp)
+  }
+
   const playRecord = (index: string, playStop: boolean)=>{
     const currentRecord = CachedRecords[index]
     const verifiyer = Math.random()
@@ -77,11 +93,11 @@ export default function App() {
       let key: RecordedKey = currentRecord[i]
       setTimeout(()=>{
         if(!PlayingRecords.includes(index+"-"+verifiyer)||!BoardRef.current || key.key === undefined) return
+        if(currentRecord.length-1 === i) StopRecord(key.hold, index, verifiyer)
         if(key.key !== -1) {
           let keyIndex = key.key + 12 * (key.octave!-1)
           const KeyElement = BoardRef.current.children[keyIndex] as HTMLButtonElement
           KeyElement.classList.add("active")
-          console.log(index, verifiyer, PlayingRecords)
           setTimeout(()=>{
             KeyElement.click()
             KeyElement.classList.remove("active")
@@ -93,6 +109,15 @@ export default function App() {
 
   const newBind = (bind: string, key: string)=>{
     setConfiguration({...configuration, keyBinds: {...configuration.keyBinds, [key]: bind}})
+  }
+
+  const createID = () : string=>{
+    let id:string = `${Math.round(Math.random()*1000)}`
+    let idArray = Object.keys(CachedRecords)
+    while(idArray.includes(id)){
+      id = `${Math.round(Math.random()*1000)}`
+    }
+    return id
   }
 
   //components
@@ -137,9 +162,11 @@ export default function App() {
   }
 
   const TopBar = ()=>{
-    return <nav>
-      <RenderCached CachedRecords={CachedRecords} playRecord={playRecord} editing={editing}/>
-      <button onClick={()=>{startEditing(!editing)}}>{editing ? "Confirm KeyBinds":"Configurate KeyBinds"}</button>
+    return <nav className='top-bar'>
+      <button onClick={()=>{startEditing(!editing)}}>
+        <FontAwesomeIcon icon={editing ? faCheck : faKeyboard}/>
+        {editing ? "Confirm KeyBinds":"Configurate KeyBinds"}
+      </button>
       <button className={editing ? "disabled":""} onClick={(e:React.MouseEvent)=>{
         if(editing) return
         if(recording && Record.length !== 0) {
@@ -167,7 +194,7 @@ export default function App() {
 
   React.useEffect(()=>{
     if(!recording && Record.length !== 0) {
-      setCachedRecords({...CachedRecords, [`${Math.round(Math.random()*1000)}`]: Record})
+      setCachedRecords({...CachedRecords, [createID()]: Record})
       setRecord([])
     }
   }, [recording])
@@ -187,8 +214,9 @@ export default function App() {
     }
   }, [editing])
 
-  return <div>
+  return <div className='main'>
     <TopBar/>
+    <RenderCached CachedRecords={CachedRecords} playRecord={playRecord} editing={editing}/>
     <GenerateBoard/>
   </div>
 }

@@ -1,4 +1,7 @@
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { CachedRecords } from "../vite-env"
+import { faPlay } from "@fortawesome/free-solid-svg-icons"
+import { faPause } from "@fortawesome/free-solid-svg-icons/faPause"
 
 type Props = {
     CachedRecords: CachedRecords
@@ -14,11 +17,17 @@ export default function RenderCached({CachedRecords, playRecord, editing}: Props
       let hold : number = li[li.length-1].hold === undefined ? 0 : li[li.length-1].hold!
       let duration = li[li.length-1].timestamp + hold
 
-      JSX.push(<li key={Math.random()} onClick={(e)=>{
+      JSX.push(<li key={Math.random()} className="record" id={id} onClick={(e)=>{
         if(editing)return
-        playRecord(id, !e.currentTarget.classList.contains("playing"))
+        let boolean = e.currentTarget.classList.contains("playing")
+        playRecord(id, !boolean)
+        let progress = e.currentTarget.firstChild! as HTMLDivElement
+        progress.style.transition = boolean ? "none" : `all ${duration}ms linear`
         e.currentTarget.classList.toggle("playing")
       }}>
+          <div className="progress"></div>
+          <FontAwesomeIcon icon={faPlay} size="xs"/>
+          <FontAwesomeIcon icon={faPause} size="xs"/>
           <p>Audio {id} - {Math.round(duration/1000)}s</p>
       </li>)
     }
@@ -26,7 +35,7 @@ export default function RenderCached({CachedRecords, playRecord, editing}: Props
     return JSX
   }
 
-  return <ul>
+  return <ul className="record-list">
     <List/>
   </ul>
 }
