@@ -15,6 +15,7 @@ const setRecord = (val: RecordedKey[]) =>{
 const defaultconfig = {
   viewBinds: true,
   viewNotes: true,
+  volume: 0.5,
   keyBinds:{
     "1.0": "a",
     "1.1": "w",
@@ -187,6 +188,12 @@ export default function App() {
       <button onClick={()=>{setConfiguration({...configuration, viewNotes: !configuration.viewNotes})}}>
         {configuration.viewNotes ? "Notes":"Notes X"}
       </button>
+      <select defaultValue={configuration.volume} onChange={(e)=>{setConfiguration({...configuration, volume: Number(e.currentTarget.value)})}}>
+        <option value={0}>0%</option>
+        <option value={0.2}>20%</option>
+        <option value={0.5}>50%</option>
+        <option value={1}>100%</option>
+      </select>
     </nav>
   }
 

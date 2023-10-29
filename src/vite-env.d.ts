@@ -17,6 +17,7 @@ export type configuration = {
   keyBinds: {
     [key: string]: string
   }
+  volume: number
   viewBinds: boolean
   viewNotes: boolean
 }

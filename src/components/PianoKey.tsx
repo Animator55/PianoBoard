@@ -1,3 +1,4 @@
+import PlaySoundMp3 from "../logic/playSound"
 import { configuration } from "../vite-env"
 
 type Props = {
@@ -11,10 +12,15 @@ type Props = {
 
 const MelodicalScale = ["Do", "Do#", "Re", "Re#", "Mi", "Fa","Fa#", "Sol", "Sol#", "La", "La#", "Si"]
 
+let preventConstant = false
+
+
 export default function PianoKey({octave, index, record, editing, configuration, newBind}: Props) {
 
     const PlaySound = (e: React.MouseEvent | React.KeyboardEvent)=>{
+        if(preventConstant) return
         console.log("played " + octave + ", " + MelodicalScale[index], e.timeStamp)
+        PlaySoundMp3(octave, index, configuration.volume)
         record(e.timeStamp)
     }
 

@@ -131,6 +131,7 @@ body, ul, p {
     align-items: center;
     cursor: pointer;
     position: relative;
+    overflow: hidden;
 }
 .record > .progress {
     position: absolute;
