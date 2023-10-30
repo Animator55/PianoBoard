@@ -5,8 +5,8 @@ import { CachedRecords, RecordedKey, configuration } from './vite-env'
 import RenderCached from './components/RenderCached'
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { faCheck } from '@fortawesome/free-solid-svg-icons/faCheck'
-import { faKeyboard } from '@fortawesome/free-solid-svg-icons/faKeyboard'
-import { faVolumeHigh, faVolumeLow, faVolumeOff } from '@fortawesome/free-solid-svg-icons'
+import { faCircleDot, faCircleStop, faGear } from '@fortawesome/free-solid-svg-icons'
+import VolumeButton from './components/VolumeButton'
 
 let Record : RecordedKey[] = []
 const setRecord = (val: RecordedKey[]) =>{
@@ -16,7 +16,7 @@ const setRecord = (val: RecordedKey[]) =>{
 const defaultconfig = {
   viewBinds: true,
   viewNotes: true,
-  volume: 0.5,
+  volume: 0.25,
   keyBinds:{
     "1.0": "a",
     "1.1": "w",
@@ -56,7 +56,6 @@ export default function App() {
   const [configuration, setConfiguration] = React.useState<configuration>(defaultconfig)
   const [CachedRecords, setCachedRecords] = React.useState<CachedRecords>({})
   const BoardRef = React.useRef<HTMLDivElement | null>(null)
-  const DragVolume = React.useRef<HTMLDivElement | null>(null)
 
   //functions
 
@@ -165,84 +164,39 @@ export default function App() {
   }
 
   const TopBar = ()=>{
-    const GenerateVolume = ()=>{
-      const drag= (e:React.MouseEvent)=>{
-        if(DragVolume.current === null)return
+    const RecordButton = ()=>{
+      let className = ""
 
-        const Move = (e2: Event)=>{
-          if(DragVolume.current === null)return
-          let event = e2 as MouseEvent
-          console.log("event")
-          let result = parseInt(DragVolume.current.style.top) + event.movementY
-          DragVolume.current.style.top = (result < 0 ? 0 : result > 90 ? 90 : result) + "%"
-        }
+      className += editing ? "disabled ":""
+      className += recording ? "recording ":""
 
-        const Leave = ()=>{
-          document.removeEventListener("mousemove", Move)
-          if(DragVolume.current === null)return
-          setConfiguration({...configuration, volume: parseInt(DragVolume.current.style.top)/100})
-        }
-        console.log("event rfasfa")
-        document.addEventListener("mousemove", Move)
-        document.addEventListener("mouseup", Leave, {once: true})
-      }   
-
-      const selectIcon = ()=>{
-        let icon = faVolumeOff
-        if(configuration.volume < 0.2) icon = faVolumeOff
-        else if(configuration.volume < 0.5) icon = faVolumeLow
-        else if(configuration.volume > 0.5) icon = faVolumeHigh
-
-        return icon
-      }
-
-      return <div className='volume'>
-        <button 
-          onMouseEnter={(e)=>{
-            let volumePop = e.currentTarget.nextSibling! as HTMLElement
-            volumePop.style.opacity = "1"
-          }}
-          onMouseLeave={(e)=>{
-            let volumePop = e.currentTarget.nextSibling! as HTMLElement
-            volumePop.style.opacity = "0"
-          }}
-        >
-          <FontAwesomeIcon icon={selectIcon()}/>
-        </button>
-        <section className='volume-pop'>
-            <div className='bar'>
-              <div className='drag' ref={DragVolume} style={{top: configuration.volume*100 + "%"}} onMouseDown={drag}></div>
-            </div>
-        </section>
-      </div>
-    }
-
-    return <nav className='top-bar'>
-      <button onClick={()=>{startEditing(!editing)}}>
-        <FontAwesomeIcon icon={editing ? faCheck : faKeyboard}/>
-        {editing ? "Confirm KeyBinds":"Configurate KeyBinds"}
-      </button>
-      <button className={editing ? "disabled":""} onClick={(e:React.MouseEvent)=>{
+      return <button className={className} onClick={(e:React.MouseEvent)=>{
         if(editing) return
         if(recording && Record.length !== 0) {
           let SilenceGap: RecordedKey = {octave: -1, key: -1, timestamp: Record[Record.length-1].timestamp, hold: e.timeStamp - Record[0].initialstamp! - Record[Record.length-1].timestamp}
           setRecord([...Record, SilenceGap])
         }
         startRecording(!recording)
-      }}>{recording ? "Stop Recording":"Record"}</button>
+      }}><FontAwesomeIcon icon={recording ? faCircleStop : faCircleDot}/>REC</button>
+    }
 
+    return <nav className='top-bar'>
+      <RecordButton/>
       <select defaultValue={octaves} onChange={(e)=>{setOctaves(Number(e.currentTarget.value))}}>
         <option value={1}>1 Octave</option>
         <option value={2}>2 Octave</option>
         <option value={3}>3 Octave</option>
       </select>
-      <button onClick={()=>{setConfiguration({...configuration, viewBinds: !configuration.viewBinds})}}>
-        {configuration.viewBinds ? "Binds":"Binds X"}
+      <button style={{opacity: configuration.viewBinds ? 1:0.5}} onClick={()=>{setConfiguration({...configuration, viewBinds: !configuration.viewBinds})}}>
+        Binds
       </button>
-      <button onClick={()=>{setConfiguration({...configuration, viewNotes: !configuration.viewNotes})}}>
-        {configuration.viewNotes ? "Notes":"Notes X"}
+      <button style={{opacity: configuration.viewNotes ? 1:0.5}} onClick={()=>{setConfiguration({...configuration, viewNotes: !configuration.viewNotes})}}>
+        Notes
       </button>
-      <GenerateVolume/>
+      <VolumeButton volume={configuration.volume} changeVolume={(vol:number)=>{setConfiguration({...configuration, volume: vol})}}/>
+      <button className={editing ? 'config active':'config'} title="Configurate KeyBinds" onClick={()=>{startEditing(!editing)}}>
+        <FontAwesomeIcon icon={editing ? faCheck : faGear}/>
+      </button>
     </nav>
   }
 

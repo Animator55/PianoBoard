@@ -75,7 +75,7 @@ button:focus {
 }
 
 .disabled {
-    opacity: 0.7;
+    opacity: 0.6;
 }
 
 /**/
@@ -93,20 +93,70 @@ body, ul, p {
 }
 
 .top-bar button, .top-bar select {
-    padding: 1rem 0.5rem;
-    border: none;
+    padding: 0.5rem 0.5rem;
     background-color: #f0f0f0;
     gap: 0.5rem;
     display: flex;
+    justify-content: center;
+    align-items: center;
+    border: 2px solid #979797;
+    border-radius: 8px;
+    min-width: 2.5rem;
 }
+
 
 .top-bar button:active, .top-bar select:active {
     background-color: #979797;
 }
 
+.recording {
+    background-color: #a30000!important;
+    color: white;
+}
+
 .top-bar select:focus {
     outline: none;
 }
+
+/*CONFIG*/
+
+.config.active {
+    background-color: #51ffd9;
+    position: relative;
+}
+.config.active::before {
+    width: 15px;
+    height: 15px;
+    position: absolute;
+    content: "";
+    background-color: #51ffd9;
+    top: 113%;
+    rotate: 45deg;
+    right: 10px;
+    animation: popMessage 2s forwards;
+}
+.config.active:after {
+    position: absolute;
+    content: "Click any Key to bind";
+    top: 135%;
+    width: 3rem;
+    right: 0;
+    padding: 0.3rem;
+    border-radius: 5px;
+    background-color: #51ffd9;
+    animation: popMessage 2s forwards;
+}
+
+@keyframes popMessage {
+    0%, 100% {
+        opacity: 0%;
+    }
+    10%, 90% {
+        opacity: 100%;
+    }
+}
+
+/*Record*/
 
 .record-list {
     display: flex;
@@ -163,6 +213,7 @@ body, ul, p {
 /* VOLUME */
 
 .volume {
+    margin-left: auto;
     position: relative;
 }
 
@@ -170,19 +221,26 @@ body, ul, p {
     width: 2.5rem;
     display: flex;
     justify-content: center;
+    height: 100%;
 }
 
+
 .volume-pop {
+    z-index: 1;
     position: absolute;
     padding: 0.5rem;
     width: -webkit-fill-available;
-    border: none;
+    border: 2px solid #979797;
     border-radius: 8px;
     background-color: #f0f0f0;
     gap: 0.5rem;
-    display: flex;
+    display: none;
     flex-direction: column;
     align-items: center;
+}
+
+.volume:has(button:hover) > .volume-pop, .volume-pop:hover {
+    display:flex
 }
 
 .volume-pop > .bar {
