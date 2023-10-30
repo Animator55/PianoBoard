@@ -159,3 +159,45 @@ body, ul, p {
     display: none;
 }
 
+
+/* VOLUME */
+
+.volume {
+    position: relative;
+}
+
+.volume > button {
+    width: 2.5rem;
+    display: flex;
+    justify-content: center;
+}
+
+.volume-pop {
+    position: absolute;
+    padding: 0.5rem;
+    width: -webkit-fill-available;
+    border: none;
+    border-radius: 8px;
+    background-color: #f0f0f0;
+    gap: 0.5rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.volume-pop > .bar {
+    position: relative;
+    background-color: #979797;
+    height: 5rem;
+    width: 0.5rem;
+    border-radius: 5px;
+}
+.volume-pop .drag {
+    position: absolute;
+    background-color: #2c2c2c;
+    height: 0.5rem;
+    left: -0.22rem;
+    width: 1rem;
+    border: none;
+    border-radius: 5px;
+}

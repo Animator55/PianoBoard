@@ -6,6 +6,7 @@ import RenderCached from './components/RenderCached'
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { faCheck } from '@fortawesome/free-solid-svg-icons/faCheck'
 import { faKeyboard } from '@fortawesome/free-solid-svg-icons/faKeyboard'
+import { faVolumeHigh, faVolumeLow, faVolumeOff } from '@fortawesome/free-solid-svg-icons'
 
 let Record : RecordedKey[] = []
 const setRecord = (val: RecordedKey[]) =>{
@@ -55,6 +56,7 @@ export default function App() {
   const [configuration, setConfiguration] = React.useState<configuration>(defaultconfig)
   const [CachedRecords, setCachedRecords] = React.useState<CachedRecords>({})
   const BoardRef = React.useRef<HTMLDivElement | null>(null)
+  const DragVolume = React.useRef<HTMLDivElement | null>(null)
 
   //functions
 
@@ -163,6 +165,58 @@ export default function App() {
   }
 
   const TopBar = ()=>{
+    const GenerateVolume = ()=>{
+      const drag= (e:React.MouseEvent)=>{
+        if(DragVolume.current === null)return
+
+        const Move = (e2: Event)=>{
+          if(DragVolume.current === null)return
+          let event = e2 as MouseEvent
+          console.log("event")
+          let result = parseInt(DragVolume.current.style.top) + event.movementY
+          DragVolume.current.style.top = (result < 0 ? 0 : result > 90 ? 90 : result) + "%"
+        }
+
+        const Leave = ()=>{
+          document.removeEventListener("mousemove", Move)
+          if(DragVolume.current === null)return
+          setConfiguration({...configuration, volume: parseInt(DragVolume.current.style.top)/100})
+        }
+        console.log("event rfasfa")
+        document.addEventListener("mousemove", Move)
+        document.addEventListener("mouseup", Leave, {once: true})
+      }   
+
+      const selectIcon = ()=>{
+        let icon = faVolumeOff
+        if(configuration.volume < 0.2) icon = faVolumeOff
+        else if(configuration.volume < 0.5) icon = faVolumeLow
+        else if(configuration.volume > 0.5) icon = faVolumeHigh
+
+        return icon
+      }
+
+      return <div className='volume'>
+        <button 
+          onMouseEnter={(e)=>{
+            let volumePop = e.currentTarget.nextSibling! as HTMLElement
+            volumePop.style.opacity = "1"
+          }}
+          onMouseLeave={(e)=>{
+            let volumePop = e.currentTarget.nextSibling! as HTMLElement
+            volumePop.style.opacity = "0"
+          }}
+        >
+          <FontAwesomeIcon icon={selectIcon()}/>
+        </button>
+        <section className='volume-pop'>
+            <div className='bar'>
+              <div className='drag' ref={DragVolume} style={{top: configuration.volume*100 + "%"}} onMouseDown={drag}></div>
+            </div>
+        </section>
+      </div>
+    }
+
     return <nav className='top-bar'>
       <button onClick={()=>{startEditing(!editing)}}>
         <FontAwesomeIcon icon={editing ? faCheck : faKeyboard}/>
@@ -188,12 +242,7 @@ export default function App() {
       <button onClick={()=>{setConfiguration({...configuration, viewNotes: !configuration.viewNotes})}}>
         {configuration.viewNotes ? "Notes":"Notes X"}
       </button>
-      <select defaultValue={configuration.volume} onChange={(e)=>{setConfiguration({...configuration, volume: Number(e.currentTarget.value)})}}>
-        <option value={0}>0%</option>
-        <option value={0.2}>20%</option>
-        <option value={0.5}>50%</option>
-        <option value={1}>100%</option>
-      </select>
+      <GenerateVolume/>
     </nav>
   }
 
