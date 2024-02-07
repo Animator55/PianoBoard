@@ -9,23 +9,26 @@ type Props = {
 
 export default function VolumeButton({volume,changeVolume}: Props) {
     const DragVolume = React.useRef<HTMLDivElement | null>(null)
-    const drag= ()=>{
+    const drag= (e: React.TouchEvent)=>{
         if(DragVolume.current === null)return
 
-        const Move = (e2: Event)=>{
+        let initialY = e.touches[0].clientY
+
+        const Move = (e2: TouchEvent)=>{
             if(DragVolume.current === null)return
-            let event = e2 as MouseEvent
-            let result = parseInt(DragVolume.current.style.top) + event.movementY
+            let actualY = e2.touches[0].clientY
+            let bool = initialY > actualY ? -1 : +1
+            let result = parseInt(DragVolume.current.style.top) + bool
             DragVolume.current.style.top = (result < 0 ? 0 : result > 90 ? 90 : result) + "%"
         }
 
         const Leave = ()=>{
-            document.removeEventListener("mousemove", Move)
+            document.removeEventListener("touchmove", Move)
             if(DragVolume.current === null)return
             changeVolume(parseInt(DragVolume.current.style.top)/100)
         }
-        document.addEventListener("mousemove", Move)
-        document.addEventListener("mouseup", Leave, {once: true})
+        document.addEventListener("touchmove", Move)
+        document.addEventListener("touchend", Leave, {once: true})
     }   
   
     const selectIcon = ()=>{
@@ -43,7 +46,7 @@ export default function VolumeButton({volume,changeVolume}: Props) {
         </button>
         <section className='volume-pop'>
             <div className='bar'>
-            <div className='drag' ref={DragVolume} style={{top: volume*100 + "%"}} onMouseDown={drag}></div>
+            <div className='drag' ref={DragVolume} style={{top: volume*100 + "%"}} onTouchStart={drag}></div>
             </div>
         </section>
     </div>
