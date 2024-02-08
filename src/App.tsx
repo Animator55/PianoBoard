@@ -52,13 +52,6 @@ export default function App() {
     </nav>
   }
 
-  React.useEffect(() => {
-    if (BoardRef.current) {
-      let button = BoardRef.current.children[0] as HTMLButtonElement
-      button.focus()
-    }
-  })
-
   return <div className='main'>
     <TopBar />
     <GenerateBoard />
