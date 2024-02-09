@@ -17,7 +17,9 @@ export default function VolumeButton({volume,changeVolume}: Props) {
         const Move = (e2: TouchEvent)=>{
             if(DragVolume.current === null)return
             let actualY = e2.touches[0].clientY
-            let bool = initialY > actualY ? -1 : +1
+            let bool = actualY - initialY 
+
+            initialY = actualY
             let result = parseInt(DragVolume.current.style.top) + bool
             DragVolume.current.style.top = (result < 0 ? 0 : result > 90 ? 90 : result) + "%"
         }

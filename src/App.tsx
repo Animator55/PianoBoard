@@ -43,7 +43,6 @@ export default function App() {
       <select defaultValue={octaves} onChange={(e) => { setOctaves(Number(e.currentTarget.value)) }}>
         <option value={1}>1 Octave</option>
         <option value={2}>2 Octave</option>
-        <option value={3}>3 Octave</option>
       </select>
       <button style={{ opacity: configuration.viewNotes ? 1 : 0.5 }} onClick={() => { setConfiguration({ ...configuration, viewNotes: !configuration.viewNotes }) }}>
         Notes

@@ -16,8 +16,7 @@ export default function PianoKey({octave, index,
     configuration, 
 }: Props) {
 
-    const PlaySound = (
-        )=>{
+    const PlaySound = ()=>{
         if(preventConstant) return
         PlaySoundMp3(octave, index, configuration.volume)
     }
@@ -28,14 +27,14 @@ export default function PianoKey({octave, index,
         return result
     }
 
-    let key = octave + "." + index
-    let bind = configuration.keyBinds[key] === undefined ? "" : configuration.keyBinds[key]
+    // let key = octave + "." + index
+    // let bind = configuration.keyBinds[key] === undefined ? "" : configuration.keyBinds[key]
 
     let Notes = configuration.viewNotes
-    let Binds = ""
+    // let Binds = ""
 
     return <button
         className={checkBlack(index)}
-        onClick={PlaySound}
-    ><div>{Notes && MelodicalScale[index]}<br/>{Binds && bind}</div></button>
+        onTouchStart={PlaySound}
+    ><div>{Notes && MelodicalScale[index]}<br/>{/*Binds && bind*/}</div></button>
 }
